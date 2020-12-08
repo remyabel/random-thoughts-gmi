@@ -1,0 +1,28 @@
+.. post:: Dec 30, 2019
+    :tags: backups sysadmin
+    :author: remyabel
+
+# More caveats and dumb mistakes
+
+## Borg
+
+Rather than use an environment variable or store my password in a permissioned file, I decided to store them in Seahorse (GNOME keyring). In doing so, I decided to make the keyring password separate from my login password for slightly extra security at the cost of convenience. It occurred to me that I should probably also change the existing password entries because an attacker with my old password can unlock the keyring. This was a mistake.
+
+Currently, Borg recommends you create passwords using the following command:
+
+```
+head -c 1024 /dev/urandom | base64
+```
+
+By default, this emits newlines in the base64 output. This can make dealing with the password *a major pain in the ass* as different applications may deal with the newlines in different ways.  After changing my passphrase I could not figure out how to get Borg to accept the new passphrase. I deleted my existing backups.
+
+The solution is either to pass `--wrap=0` or use a shorter passphrase. The developer considers 32 bytes instead of 1024 to be sufficient. However, next time I should just generate the passphrase with my password manager.
+
+## Seahorse
+
+When dealing with the keyring, I made a couple of key errors due to sloppiness and sleep deprivation:
+
+- I overwrote `keyrings.bak` with `keyrings` - I overwrote an existing password
+  entry because `secret-tool` bases it on key/value attributes
+
+My tired brain somehow thought that changing the label would be sufficient.  Instead this changed the label of the existing entry. IMO, the CLI for `secret-tool` is a little lacking and could use some UX improvements to prevent this kind of mistake.

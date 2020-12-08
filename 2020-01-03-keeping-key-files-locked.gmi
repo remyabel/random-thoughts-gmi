@@ -1,0 +1,33 @@
+.. post:: Jan 03, 2020
+    :tags: backups sysadmin
+    :author: remyabel
+
+# Keeping key files locked
+
+This is an obvious practice that I somehow neglected. Key files, whether they be from KeePassXC or Borg, should not be modified (obviously). Modification or corruption could lead to not being able to access your databases or repos.
+
+This is a quick fix. First, permissions:
+
+```
+    chmod 400 key-file
+```
+
+Then, when using `git-annex` we want to keep these files locked. This means adjusting our backup script slightly. First, I have a file called `unlock-exclude.txt` containing files I want to keep locked. Then we have this unruly command:
+
+```
+find . -mindepth 1 \( -path ./.git $(printf " -o -path %s " $(cat ~/unlock-exclude.txt)) \) \
+    -prune -o -exec git annex unlock '{}' \;
+```
+
+As far as I'm aware, `find` has no `exclude-from` option.
+
+Finally, we fix the lock status of our files:
+
+```
+git annex lock key-file
+git-store-metadata
+git annex add --include-dotfiles .
+git annex sync --content --content="Lock our key files"
+```
+
+As mentioned previously, I have `annex.addunlocked` set to `true`, but this does not pose a problem.

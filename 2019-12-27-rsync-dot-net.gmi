@@ -1,0 +1,23 @@
+.. post:: Dec 27, 2019
+    :tags: backups sysadmin
+    :author: remyabel
+
+# Using Rsync.net
+
+This is not a promotion or sponsored article.
+
+After setting up Borgmatic, I wanted a cheap offsite backup solution for my repositories. rsync.net has special pricing [1] for those who specifically use Borg. At the time of writing, you pay $18 a year for 100 GB of storage. One primary advantage of using rsync.net is that you do not pay for ingress/egress and you get georedundancy (for free? It's not clear). However, there's no 2FA and they do not allow special characters in passwords. This raises concerns about account management security. As to why one would use a dedicated service like rsync.net and not something like S3 or GCS, it's because Borg uses a server/client model.  If you had to use a solution where you do not have shell access (and Borg is not installed) then you would have to use FUSE, but that comes with its own disadvantages.
+
+=> https://www.rsync.net/products/borg.html special pricing
+
+## Usage
+
+rsync.net allows you to run a limited amount of commands, but you do not get an interactive shell. It provides both legacy borg and the 1.x branch (aliased as `borg1`).  In order to use the former, you need to pass `--remote-path` or set `location.remote_path` in the Borgmatic config. After adding your rsync.net server as a remote repository, you're good to go.
+
+## Issues
+
+One strange thing is that you cannot use output redirection. For example `ssh rsync_net 'echo "test" > foo'` results in `Warning: Output redirection not supported`. This means I need to edit files locally then upload them which can be slightly annoying.
+
+I also discovered a couple of issues unrelated to rsync.net. Borgmatic has a minor UX problem (or bug) where when initializing a new repository, its `borg info` check apparently does not invoke the binary you specified with `remote_path`. This led me to believe it was creating my repository with the legacy borg. Borg also apparently does not have an easy way to see what version a repository was initialized with (the `version` key in the `config` file had the same value for both binaries with my testing). Your only indication is a message that appears in newer Borg versions.
+
+Furthermore, unlike other backup solutions, Borg does not encourage you to clone repositories. This means any repositories created later will not be in sync in terms of backups.
