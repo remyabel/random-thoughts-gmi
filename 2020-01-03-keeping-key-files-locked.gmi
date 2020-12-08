@@ -9,7 +9,7 @@ This is an obvious practice that I somehow neglected. Key files, whether they be
 This is a quick fix. First, permissions:
 
 ```
-    chmod 400 key-file
+chmod 400 key-file
 ```
 
 Then, when using `git-annex` we want to keep these files locked. This means adjusting our backup script slightly. First, I have a file called `unlock-exclude.txt` containing files I want to keep locked. Then we have this unruly command:
