@@ -1,0 +1,94 @@
+::: {.post tags="privacy mailinabox sysadmin" author="remyabel"} Jan 30, 2020 :::
+
+# Customizing Mail-in-a-box part 2
+
+In attempting to block bots, I've gone through several iterations with configuring Modsecurity, Fail2ban and Nginx.
+
+First, I discovered that the mitigation for the invalid (or absent) hostname attack is sufficient for the bots I've encountered so far. The following configuration:
+
+```
+server {
+       listen 80 default_server;
+       listen 443 ssl default_server;
+       server_name _;
+       server_tokens off;
+       modsecurity on;
+       modsecurity_rules_file /etc/modsecurity/includes.conf;
+       include /etc/nginx/bots.d/blockbots.conf;
+       include /etc/nginx/bots.d/ddos.conf;
+       ssl_certificate PATH_TO_CERTIFICATE;
+       ssl_certificate_key PATH_TO_PRIVATE_KEY;
+       return 444;
+}
+```
+
+will block requests like the following:
+
+```
+IP_ADDRESS - - [30/Jan/2020:14:36:48 -0500] "GET / HTTP/1.1" 444 0 "-" "HOSTNAME"
+```
+
+Returning `444`, which is an Nginx specific status code, ensures the connection is closed immediately (preserving server resources). Since these invalid requests are stopped at this level, it doesn't even trigger modsecurity. I also have a rather strict fail2ban jail which will ban offenders at the first request for a whole day:
+
+```
+enabled  = true
+port     = http,https
+filter   = miab-local2
+logpath  = /var/log/nginx/access.log
+maxretry = 1
+findtime = 30
+bantime = 86400
+```
+
+And the rather basic filter:
+
+```
+[INCLUDES]
+
+before = common.conf
+
+[Definition]
+failregex = <HOST>.*GET.*444.*
+ignoreregex =
+datepattern = {^LN-BEG}%%ExY(?P<_sep>[-/.])%%m(?P=_sep)%%d[T ]%%H:%%M:%%S(?:[.,]%%f)?(?:\s*%%z)?
+              ^[^\[]*\[({DATE})
+              {^LN-BEG}
+```
+
+So far I only care about `444` since no legitimate request should trigger that status code.
+
+For blacklists, the two projects I'm using are ipset-blacklist[1] and nginx-badbot-blocker[2]. The former uses several RBL's then simply feeds them into ipset while the latter does it at the Nginx level. As the badbot blocker returns a `444` for any bad domain, it integrates well with the above fail2ban configuration.
+
+=> https://github.com/trick77/ipset-blacklist 1: https://github.com/trick77/ipset-blacklist
+=> https://github.com/mariusv/nginx-badbot-blocker 2: https://github.com/mariusv/nginx-badbot-blocker
+
+Furthermore I utilized both gixy[3], a Nginx configuration static analyzer and the CIS Benchmarks. I added the following to my Nginx configuration:
+
+=> https://github.com/yandex/gixy 3: https://github.com/yandex/gixy
+
+```
+# X-Frame-Options is to prevent from clickJacking attack
+add_header X-Frame-Options SAMEORIGIN;
+
+#  disable content-type sniffing on some browsers.
+add_header X-Content-Type-Options nosniff;
+
+# This header enables the Cross-site scripting (XSS) filter
+add_header X-XSS-Protection "1; mode=block";
+
+client_body_buffer_size  100K;
+client_header_buffer_size 1k;
+client_max_body_size 100k;
+large_client_header_buffers 2 1k;
+
+client_body_timeout   10;
+client_header_timeout 10;
+keepalive_timeout     5 5;
+send_timeout          10;
+
+if ($request_method !~ ^(GET|PUT|POST)$ ) {
+    return 444;
+}
+```
+
+The header settings are recommended by OWASP while the buffer size and timeout settings are recommended by the CIS Benchmarks to deal with buffer overflow and DoS attacks respectively. Finally, the conditional is to limit the allowed HTTP verbs to a reasonable set.

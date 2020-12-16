@@ -1,14 +1,10 @@
-.. post:: Dec 29, 2019
-    :tags: automation sysadmin
-    :author: remyabel
-
 # Solving miscellaneous automation problems
 
 While automation and scripting can save time and headaches, with it comes strange edge cases.
 
-pip infamously does not have a dependency resolver [1]. This means in order to upgrade all packages at once you need an unruly command like this:
+pip infamously does not have a dependency resolver[1]. This means in order to upgrade all packages at once you need an unruly command like this:
 
-=> https://github.com/pypa/pip/issues/988 does not have a dependency resolver
+=> https://github.com/pypa/pip/issues/988 1: https://github.com/pypa/pip/issues/988
 
 ```
 pip3 list --user --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1
@@ -16,7 +12,7 @@ pip3 list --user --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1
 
 Upgrading all pip packages at once seems like an anti-pattern because different packages have different requirements and upgrading dependencies can break things. For this reason, dependencies are not updated automatically. However, because there is no convenient way to keep your packages up-to-date due to the lack of a dependency resolver, you have a bit of a catch-22. Installing Python packages via your system package manager resolves this problem because the packages are curated but you run the risk of poorly maintained packages and developers prefer moving at a faster pace than system package managers.
 
-But I digress. There were two interesting things I ran into here. First, `pip install` will complain if you try to pass it no requirements. It does *not* complain about an empty `requirements.txt` file. The former behavior was changed to also have `pip install` return a non-zero exit status upon error.  Ironically, this poses a problem for me I use `chronic` combined with `MAILTO` to e-mail me an error upon output. I do not wish to receive an e-mail for this error because it will happen the majority of the time. This means I need to do something like this:
+But I digress. There were two interesting things I ran into here. First, `pip install` will complain if you try to pass it no requirements. It does *not* complain about an empty `requirements.txt` file. The former behavior was changed to also have `pip install` return a non-zero exit status upon error. Ironically, this poses a problem for me I use `chronic` combined with `MAILTO` to e-mail me an error upon output. I do not wish to receive an e-mail for this error because it will happen the majority of the time. This means I need to do something like this:
 
 ```
 # Fish shell syntax
@@ -31,4 +27,4 @@ Secondly, I discovered that because I was not using the `-e` switch with `chroni
 15 22 * * * chronic fish -c 'borgmatic -v -1 --syslog-verbosity 1; borgmatic -c /home/tom/.config/borgmatic/rsync_net.yaml -v -1 --syslog-verbosity 1; enable_suspend'
 ```
 
-Here we have Borgmatic only output errors but log everything else to syslog.  Because `fish -c` uses the return status of the last command, `chronic` did not trigger. 
+Here we have Borgmatic only output errors but log everything else to syslog. Because `fish -c` uses the return status of the last command, `chronic` did not trigger.

@@ -1,0 +1,73 @@
+# Customizing Mail-in-a-box
+
+As Mail-in-a-box is an all-in-one solution, it is not meant to be customized. The reasons for this makes sense: it's supposed to come with sensible defaults and if people customize their installations, it comes with risks and makes it harder to support.
+
+With that being said, I'm a guy that likes to tinker and also found some things that I felt were necessary to be modified. For example, I removed features that I don't use (reducing the attack surface), added the Mod Security WAF and added some IP restrictions since I'm the only person using the box. Furthermore, since Mail-in-a-box has compatibility in mind, it may actually be configured with insecure defaults since many users either cannot or will not fix their boxes.
+
+## Workflow
+
+The workflow is fairly simple. I use `etckeeper` to keep track of any personal modifications and reverse any unwanted changes by Mail-in-a-box (they reverse custom configuration changes for "idempotency"). This also allows me to easy keep track of which changes to add to Mail-in-a-box itself.
+
+Despite the fact that the developer does not want you to modify it, Mail-in-a-box is very configurable and modular to his credit. When you perform various actions, it'll call `web_update` which creates the Nginx configuration. This means if we want to modify the Nginx configuration, we just create a new branch in our MIAB installation, edit the configuration files, then run the `web_update` tool manually. Since we are using git in both the MIAB installation and `/etc`, merging and diffing is seamless.
+
+## Installing ModSecurity
+
+On Ubuntu 18.04, there is no package for ModSecurity. The official documentation suggests that you compile Nginx from source, using a flag that points to the ModSecurity-nginx module. This is undesirable for obvious reasons, however ejhayes posted a solution in #117[1] that involves compiling the module in an Nginx source tree, then copying the artifact over.
+
+=> https://github.com/SpiderLabs/ModSecurity-nginx/issues/117#issuecomment-495350465 1: https://github.com/SpiderLabs/ModSecurity-nginx/issues/117#issuecomment-495350465
+
+First, grab the compile flags:
+
+```
+nginx -V
+# configure arguments: --with-cc-opt='...'
+```
+
+Download the source and compile it:
+
+```
+./configure --add-dynamic-module='path-to-Modsecurity-nginx' --with-cc-opt='...'
+make modules
+cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules/
+```
+
+Then you need to enable the module:
+
+```
+echo 'load_module modules/ngx_http_modsecurity_module.so;' \
+    > /usr/share/nginx/modules-available/mod-http-modsecurity-module.conf
+cd /etc/nginx/modules-available/
+ln -s /usr/share/nginx/modules-available/mod-http-modsecurity-module.conf \
+    50-http-modsecurity-module.conf
+```
+
+Now we need to get our ruleset and enable it in Nginx. First install the ruleset:
+
+```
+apt install modsecurity-crs
+```
+
+You will want to remove anything Apache related from `/etc/modsecurity/modsecurity.conf-recommended`. Next, we want to create our `includes.conf` file. ModSecurity only accepts one config file, but there are multiple configuration files that we need to include and must go in a certain order.
+
+```
+include modsecurity.conf-recommended
+include crs/crs-setup.conf
+include crs/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+include crs/rules/*
+include crs/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+```
+
+Here, for brevity, I used a wildcard. For Nginx, you actually want to list the files in `crs/rules/` explicitly to ensure proper ordering. Grab the list with:
+
+```
+ls -1a /usr/share/modsecurity-crs/rules/
+```
+
+Finally, add the following to whatever section you'd like in your Nginx config:
+
+```
+modsecurity on;
+modsecurity_rules_file /etc/modsecurity/includes.conf;
+```
+
+Test that it works with `nginx -T`. Then check for `/var/log/nginx/modsec_audit.log` and initialization in `/var/log/nginx/error.log`.

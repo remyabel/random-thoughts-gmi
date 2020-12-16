@@ -1,18 +1,13 @@
-.. post:: Dec 27, 2019
-    :tags: backups sysadmin
-    :author: remyabel
-
 # Using Rsync.net
-
 This is not a promotion or sponsored article.
 
-After setting up Borgmatic, I wanted a cheap offsite backup solution for my repositories. rsync.net has special pricing [1] for those who specifically use Borg. At the time of writing, you pay $18 a year for 100 GB of storage. One primary advantage of using rsync.net is that you do not pay for ingress/egress and you get georedundancy (for free? It's not clear). However, there's no 2FA and they do not allow special characters in passwords. This raises concerns about account management security. As to why one would use a dedicated service like rsync.net and not something like S3 or GCS, it's because Borg uses a server/client model.  If you had to use a solution where you do not have shell access (and Borg is not installed) then you would have to use FUSE, but that comes with its own disadvantages.
+After setting up Borgmatic, I wanted a cheap offsite backup solution for my repositories. rsync.net has special pricing[1] for those who specifically use Borg. At the time of writing, you pay $18 a year for 100 GB of storage. One primary advantage of using rsync.net is that you do not pay for ingress/egress and you get georedundancy (for free? It's not clear). However, there's no 2FA and they do not allow special characters in passwords. This raises concerns about account management security. As to why one would use a dedicated service like rsync.net and not something like S3 or GCS, it's because Borg uses a server/client model. If you had to use a solution where you do not have shell access (and Borg is not installed) then you would have to use FUSE, but that comes with its own disadvantages.
 
-=> https://www.rsync.net/products/borg.html special pricing
+=> https://www.rsync.net/products/borg.html 1: https://www.rsync.net/products/borg.html
 
 ## Usage
 
-rsync.net allows you to run a limited amount of commands, but you do not get an interactive shell. It provides both legacy borg and the 1.x branch (aliased as `borg1`).  In order to use the former, you need to pass `--remote-path` or set `location.remote_path` in the Borgmatic config. After adding your rsync.net server as a remote repository, you're good to go.
+rsync.net allows you to run a limited amount of commands, but you do not get an interactive shell. It provides both legacy borg and the 1.x branch (aliased as `borg1`). In order to use the former, you need to pass `--remote-path` or set `location.remote_path` in the Borgmatic config. After adding your rsync.net server as a remote repository, you're good to go.
 
 ## Issues
 

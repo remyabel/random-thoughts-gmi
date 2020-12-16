@@ -1,7 +1,3 @@
-.. post:: Dec 21, 2019
-    :tags: backups sysadmin
-    :author: remyabel
-
 # Evaluating backup solutions
 
 There are several key properties people look for in a good backup solution:
@@ -15,50 +11,54 @@ There are several key properties people look for in a good backup solution:
 
 In my research, I've come across various backup solutions, switching from one to another as my needs evolve or I run into limitations. These include, in no particular order:
 
-=> https://github.com/bup/bup       bup
-=> https://launchpad.net/duplicity  duplicity
-=> https://git-annex.branchable.com git-annex
-=> https://duplicacy.com            duplicacy
-=> https://www.borgbackup.org       borg
+* bup[1]
+* duplicity[2]
+* git-annex[3]
+* duplicacy[4]
+* borg[5]
 
 ## bup and git-annex
 
 git-annex is technically not a backup solution, but supports bup as a backend, allowing it to be used for backups. git-annex is primarily useful for retrieving and storing large files without particularly caring where they actually are located. For small files, it can be used as a simple backup tool.
 
+=> https://github.com/bup/bup 1: https://github.com/bup/bup
+=> https://launchpad.net/duplicity 2: https://launchpad.net/duplicity
+=> https://git-annex.branchable.com/ 3: https://git-annex.branchable.com/
+=> https://duplicacy.com/ 4: https://duplicacy.com/
+=> https://www.borgbackup.org/ 5: https://www.borgbackup.org/
+
 For the latter use-case, I use git-annex to backup my secrets (`.gnupg` and `.ssh` folders as well as my KeePassXC files). Storing them in version control is a nice feature as I may delete/add keys or entries overtime and may want to retrieve something I previously deleted. Furthermore, the location tracking feature can be useful if I want to store my secrets on a USB drive.
 
-The primary disadvantage of git-annex is that it doesn't support metadata, which is ironic since etckeeper [1] does. I've written an article [2] on Linux Guide and Hints that can teach you how to get around that problem.
+The primary disadvantage of git-annex is that it doesn't support metadata, which is ironic since etckeeper[6] does. I've written an article[7] on Linux Guide and Hints that can teach you how to get around that problem.
 
-=> http://joeyh.name/code/etckeeper/ 
-=> https://linuxguideandhints.com/fedora/backups.html#id3
+=> http://joeyh.name/code/etckeeper/ 6: http://joeyh.name/code/etckeeper/
+=> https://linuxguideandhints.com/fedora/backups.html#id3 7: https://linuxguideandhints.com/fedora/backups.html#id3
 
 ## duplicity and duplicacy
-duplicity uses GPG for encryption while duplicacy rolls its own custom scheme.  In general, I tend not to trust implementations that "roll their own crypto" because there may be flaws the developers are not aware of. However, the primary reason I prefer duplicity over duplicacy is the command line interface is much easier to use. Recently, I have stopped using duplicity because in the transition from Python 2 to 3 I have encountered dealbreaking bugs and the cycle of report-and-wait-for-another-release is unacceptable to me.
 
-Aside from that, duplicity's interface is convenient. You can specify a multi-backend that can either contain filesystem paths or remote paths, as well as your GPG key, and it will seamlessly encrypt and backup to those locations.  duplicity also works great with cron, while other backup solutions do not necessarily work great with cron out of the box.
+duplicity uses GPG for encryption while duplicacy rolls its own custom scheme. In general, I tend not to trust implementations that "roll their own crypto" because there may be flaws the developers are not aware of. However, the primary reason I prefer duplicity over duplicacy is the command line interface is much easier to use. Recently, I have stopped using duplicity because in the transition from Python 2 to 3 I have encountered dealbreaking bugs and the cycle of report-and-wait-for-another-release is unacceptable to me.
+
+Aside from that, duplicity's interface is convenient. You can specify a multi-backend that can either contain filesystem paths or remote paths, as well as your GPG key, and it will seamlessly encrypt and backup to those locations. duplicity also works great with cron, while other backup solutions do not necessarily work great with cron out of the box.
 
 There are a couple of disadvantages aside from ones I've already mentioned:
 
-- Although duplicity compresses well, the backup and restore time is lengthy
-- Incremental backups are useless without the full chain
-- Include/exclude patterns will match other paths even when not using a
-  wildcard (such as `go` and `gopher`)
+* Although duplicity compresses well, the backup and restore time is lengthy
+* Incremental backups are useless without the full chain
+* Include/exclude patterns will match other paths even when not using a wildcard (such as `go` and `gopher`)
 
 ## borg
 
-As mentioned previously, I do not like it when developers "roll their own crypto". An older version of Borg had a flaw in the cryptographic authentication scheme (CVE-2016-10099). While now fixed, it casts doubt on Borg's overall security even if its individual components are fine. Another downside of Borg is that it is complex to use, however that is a non-issue because there is a wrapper called borgmatic [3] which simplifies things greatly
-and is actively maintained.
+As mentioned previously, I do not like it when developers "roll their own crypto". An older version of Borg had a flaw in the cryptographic authentication scheme (CVE-2016-10099). While now fixed, it casts doubt on Borg's overall security even if its individual components are fine. Another downside of Borg is that it is complex to use, however that is a non-issue because there is a wrapper called borgmatic[8] which simplifies things greatly and is actively maintained.
 
-=> https://torsion.org/borgmatic/
+=> https://torsion.org/borgmatic/ 8: https://torsion.org/borgmatic/
 
-One annoying aspect of borgmatic is that it seems to assume "root by default".  Borg encourages you to use non-root if it is not necessary (for example if you are only backing up your own home folder). However, the default search paths and the instructions for borgmatic include sudo and creating configuration files in `etc`. I found out in the issue tracker you can instruct borgmatic to read/create configuration files in a custom location (for example `~/.config/borgmatic`), allowing non-root usage, but there does not seem to be a way to make it the default. Borgmatic should follow the standard practice of reading from local configuration first, then system configuration after.
+One annoying aspect of borgmatic is that it seems to assume "root by default". Borg encourages you to use non-root if it is not necessary (for example if you are only backing up your own home folder). However, the default search paths and the instructions for borgmatic include sudo and creating configuration files in `etc`. I found out in the issue tracker you can instruct borgmatic to read/create configuration files in a custom location (for example `~/.config/borgmatic`), allowing non-root usage, but there does not seem to be a way to make it the default. Borgmatic should follow the standard practice of reading from local configuration first, then system configuration after.
 
 To close it off, let's talk about the encryption workflow. Borg requires two pieces of information: a passphrase and a (per-repo) keyfile. In order to read the contents of a repo, you need both. There are three primary ways of providing a passphrase to Borg:
 
-- Environment variable or plain-text in a permissions protected script
-- Storing it in a permissions protected file, then specifying the passphrase
-  command (such as `cat ~/.secret`)
-- Storing it in a keyring
+* Environment variable or plain-text in a permissions protected script
+* Storing it in a permissions protected file, then specifying the passphrase command (such as `cat ~/.secret`)
+* Storing it in a keyring
 
 Comparatively, for a GPG workflow, I would cache the passphrase (obtained from my password manager) when first logging in. Then as long as my passphrase is cached, I can interact with my GPG encrypted backups whenever I want. Caching the passphrase is also important for unattended backups.
 

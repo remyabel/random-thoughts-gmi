@@ -1,0 +1,27 @@
+# More manual labor
+
+With a distributed workflow with `git-annex` comes manual labor and more edge-cases.
+
+I discovered that `chcon -R` does not work the way I thought it would. You'd think that it would recursively set the context for each file/directory, but instead it takes the context of what you're referencing and applies that to each file/directory. In other words, instead of:
+
+```
+chcon -R --reference=foo a
+```
+
+We need to do:
+
+```
+chcon -R --reference=foo a
+chcon -R --reference=foo/b baz/b
+```
+
+The `diff` command does not seem to take ACLs/contexts into account, so I need to check it manually. Although I'm sure I'm simply ignorant on a better way of doing things.
+
+When double-checking each `git-annex` repo of mine, I also found a couple of other quirks:
+
+* Unstaged changes that I'm not sure where it came from
+* Redundant remotes
+
+Furthermore, there is no way that I know of to automatically copy the remotes of one repo to another. Fortunately, they exist in `.git/config` and since the UUID's do not differ you can copy them safely from one config to another.
+
+I should probably edit `.etckeeper`'s store metadata script to do ACL's as well to overcome the `chcon` limitation. I should probably also look into automating checking that all the repos are consistent with one another and sending an e-mail if there's any oddities.

@@ -1,7 +1,3 @@
-.. post:: Jan 03, 2020
-    :tags: backups sysadmin
-    :author: remyabel
-
 # Keeping key files locked
 
 This is an obvious practice that I somehow neglected. Key files, whether they be from KeePassXC or Borg, should not be modified (obviously). Modification or corruption could lead to not being able to access your databases or repos.

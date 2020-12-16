@@ -1,0 +1,52 @@
+::: {.post tags="privacy dnscrypt sysadmin dns-over-http" author="remyabel"} Feb 26, 2020 :::
+
+# Firefox and DoH controversy
+
+There's been a lot of controversy lately over Firefox's plan to turn DoH by default. Criticisms range from the centralization of DNS to DoH being inferior to DoT. Personally, I think Mozilla should be getting credit for braving the criticism especially in the face of the rhetoric against encrypted DNS, but that is neither here nor there.
+
+## Centralization of DNS
+
+The criticism of Firefox's partnership with Cloudflare and centralization of DNS isn't without merit. Much like AWS, much of the Internet utilizes CloudFlare for many of its services (proxying, DDoS protection, etc.) It gatekeeps the Internet with its DDoS protection, infamously making the experience worse for Tor users for example by either bombarding them with the highest difficulty captcha settings or outright blocking Tor exit node traffic. Furthermore, being a US-based country many have concerns that centralizing all of the web's traffic through Cloudflare makes it easier for it to be tapped by US-based IC's.
+
+What does that have to do with Firefox? Firefox has a partnership with Cloudflare. The resolver used specifically for DoH in Firefox has a much more strict logging policy than Cloudflare's default resolver. There are two primary complaints here:
+
+* Firefox shouldn't override the system defaults
+* Cloudflare bad
+
+For the latter, it is trivial to use your own DoH provider. You miss out on encrypted SNI support because it's hard-coded in Firefox to only work with Cloudflare; but given this is currently a Cloudflare specific technology one is not missing out on much. For the former, you can simply turn it off. Yes overriding system defaults is usually bad, but the majority of people are not running encrypted DNS setups or even know what DoH is, so this is a strategic move.
+
+## DNSCrypt setup
+
+With that being said, you should be using DNSCrypt in conjunction with a DoH provider. In this example, I use Adguard which has a no-logging policy and comes with ad-blocking services. Furthermore, I use notracking/hosts-blocklists[1]. The configuration should look something like this:
+
+=> https://github.com/notracking/hosts-blocklists 1: https://github.com/notracking/hosts-blocklists
+
+```
+server_names = ['adguard']
+
+[local_doh]
+
+listen_addresses = ['127.0.0.1:3000']
+
+path = "/dns-query"
+
+cert_file = "localhost.pem"
+cert_key_file = "localhost.pem"
+
+[blacklist]
+
+blacklist_file = '/etc/dnscrypt-proxy/blacklist.txt'
+
+[anonymized_dns]
+
+routes = [
+    { server_name='adguard', via=['sdns://gRE2NC40Mi4xODEuMjI3OjQ0Mw'] }
+]
+
+[static]
+
+[static.'adguard']
+stamp = 'sdns://AQIAAAAAAAAAFDE3Ni4xMDMuMTMwLjEzMDo1NDQzINErR_JS3PLCu_iZEIbq95zkSV2LFsigxDIuUso_OQhzIjIuZG5zY3J5cHQuZGVmYXVsdC5uczEuYWRndWFyZC5jb20'
+```
+
+A couple of notes: first, the blacklist file you should be using is `dnscrypt-proxy.blacklist.txt` which obviously is designed to specifically be used with DNSCrypt. Secondly, I use an anonymous DNS route (it's important to choose a provider that's different from your upstream provider). This allows you to use a DNS relay (which cannot see your IP address) for extra anonymity. This is especially important since Adguard is hosted in Russia, which has been known to compel Internet companies to hand over traffic before. Finally, rather than trust your traffic with an upstream DoH provider, you can simply add `https://127.0.0.1:3000/dns-query` to Firefox.

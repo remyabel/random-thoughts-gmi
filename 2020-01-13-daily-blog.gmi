@@ -1,0 +1,86 @@
+# DNSCrypt and self-hosted e-mail
+
+I've been avoiding DNSCrypt[1] and looking into a self-hosted e-mail solution due to perceived complexity. While the former is dead simple to setup, it is generally advised to not setup your own e-mail server for numerous reasons. To start with, it's hard to get right and you have to be wary about your e-mails being marked as spam.
+
+=> https://www.dnscrypt.org/ 1: https://www.dnscrypt.org/
+
+## DNSCrypt
+
+Why use DNSCrypt? Although you can use a resolver or DoH provider like Cloudflare, there are concerns about logging and warrants (Cloudflare is in a 5-eyes country and has complied with warrants before). The question then is how easy is DNSCrypt to set up and how resource-intensive is it? It's extremely simple to set up and if you have a small number of users (in this case, myself) then you can don't need an external system to run it on.
+
+```
+dnf install dnscrypt-proxy
+```
+
+Then add the following contents to `/etc/resolv.conf`:
+
+```
+nameserver 127.0.0.1
+options edns0 single-request-reopen
+```
+
+Enable it:
+
+```
+systemctl enable dnscrypt-proxy.service
+systemctl start dnscrypt-proxy.service
+```
+
+Using it as a DoH provider is also dead simple. All you need to do is generate a self-signed certificate, point the config towards it, then add the DoH URL to Firefox. Note that Firefox currently does not support encrypted SNI for non-Cloudflare resolvers.
+
+On iOS, I use DNSCloak and the Cloudflare for Mozilla resolver (which has a stricter logging policy compared to Cloudflare's regular resolver).
+
+## DNSCrypt docker server
+
+It isn't clearly explained in the documentation what the relationship between client and server is and when you would use one or the other. You can use the client without the server. However, based on my limited understanding, the server is an all-in-one resolver that comes with DNSSEC support.
+
+I only made a few changes to the setup command:
+
+```
+docker run --name=dnscrypt-server -p 443:443/udp -p 443:443/tcp --net=host \
+    --ulimit nofile=90000:90000 --restart=unless-stopped \
+    -v /etc/dnscrypt-server/keys:/opt/encrypted-dns/etc/keys:Z \
+    jedisct1/dnscrypt-server init -N example.com -E '192.168.0.7:443' \
+    -T 127.0.0.1:3000
+```
+
+Here I add `:Z` to the end of the volume mount for SELinux since I'm on Fedora. Then I appended the DoH URL at the end to forward traffic to the server.
+
+Once you start the server, it'll print the information (stamp, etc.) that you need to add to your configuration file. The only other thing we need is a systemd service file now. We don't need anything more complicated than the bare minimum:
+
+```
+[Unit]
+Description=dnscrypt-server docker container
+Wants=syslog.service
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a dnscrypt-server
+ExecStop=/usr/bin/docker stop -t 10 dnscrypt-server
+[Install]
+WantedBy=multi-user.target
+```
+
+## Mail-in-a-box
+
+Why use a self-hosted mail solution? A few reasons:
+
+* The popular E2E providers like Protonmail or Tutanota are not immune to warrants
+* They hand-roll their crypto or have weaknesses in other ways, i.e doing crypto in JavaScript or not being able to send encrypted e-mail to non-users
+* Protonmail does not allow you to export your e-mails without paying
+
+As I've said elsewhere, I think the simplest and less-fuss solution is to use an offline e-mail client and use GPG to encrypt your e-mails. However, many people disagree and think GPG should go away. But short of using an E2E e-mail provider I haven't seen a GPG critic list a viable alternative.
+
+So the next question is what is my threat model? Two things:
+
+* Losing access to my e-mails if Google decides to arbitrarily nuke my account (see the Youtube spam emoji account nuke drama)
+* Google scanning my e-mails to build a profile on me
+
+It would be nice if I could use GPG encrypted e-mail all the time, but that simply isn't reality. The simplest solution is to move my e-mails to another provider.
+
+The solution I landed on is Mail-in-a-box[2]. It's open source and automates the entire process. The only configuration required is setting up the VPS and DNS nameservers. Rather than talk about the positives, I'm going to end this article on a short wish-list:
+
+=> https://github.com/mail-in-a-box/mailinabox 2: https://github.com/mail-in-a-box/mailinabox
+
+* Adding either 2FA, VPN, or client certificate support for the admin interface
+* Removing all inline JavaScript and adding a content security policy
+* Rather than automating backups, add support for running your own backup solution

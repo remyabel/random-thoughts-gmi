@@ -1,0 +1,26 @@
+# Weird XFCE bug and duplicacy
+
+## XFCE power manager bug
+
+I suspected that disabling suspend via `xfconf` was not working as expected. For example:
+
+```
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/inactivity-on-ac -s 0
+```
+
+In theory should set the inactivity to 0, disabling suspend. If you view the slider in the GUI it displays "Never" as expected. However, I confirmed my theory when using `journalctl` to check the timestamps and did some googling. Apparently, XFCE uses a *hard-coded value* of `14` minutes for disabling suspend for some insane reason. And this bug has been around for at least 4 years.
+
+While at least I figured the problem out, I'm considering using presentation mode now incase the magic value changes in the future.
+
+## Duplicacy
+
+After fat fingering deleting one of my Borg backup repositories, I finally added an alias for `rm -i`. This gave me an opportunity to finally test out Duplicacy.
+
+In the past, I've avoided Duplicacy since I did not like the CLI and having to be in the folder you are backing up (what it calls the "repository") is slightly counter-intuitive. However, after setting it up I am pleased with the results:
+
+* Backing up was speedy
+* The backup size is fairly small
+* You can encrypt the backups with an RSA key
+* Native support for cloud backends, which Borg does not have
+
+With that being said, I have two main complaints. First, it seems strange to support backing up with an arbitrary RSA key and not GPG, but maybe there are some technical constraints to that. Secondly, Duplicacy currently does not work with Secret Service and/or the GNOME keyring. Looking at the code shows that the keyring library it uses hasn't been updated in 2 years. As such, one needs to use environment variables. While you can store the actual secrets in the keyring, then use `secret-tool` to retrieve them, they're still in plaintext in the environment variables. Either fixing keyring support or adding something similar to `BORG_PASSCOMMAND` would be nice.
