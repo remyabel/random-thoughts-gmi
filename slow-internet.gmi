@@ -1,0 +1,51 @@
+# My life on slow internet
+
+For approximately 7 months now, I've been surviving on slow internet. I have a 50 KB/s mobile hotspot tethered to my computer. Living with such slow speeds require that I change my habits a bit.
+
+It goes without saying that 50 KB/s is not a lot. I can browse the web somewhat comfortably (with UBlock Origin and NoScript of course) and Discord works perfectly fine. However, any large task such as downloads or watching a video will dominate the bandwidth and make other things sluggish. So I need to minimize background downloads and think about my priorities.
+
+At the time of writing, according to my phone, I've consumed 359 GB of data in the past 7 months.
+
+## Adblocking
+
+I have two layers of adblocking: using a blocklist with dnscrypt and UBlock Origin (which is a browser extension). Dnscrypt will block requests at the DNS level and works for my entire system whereas UBlock Origin obviously only works in the browser. This blocks malware, tracking and ads which keeps me safe and speeds up my browsing experience. In fact, if I didn't have these installed I probably wouldn't be able to browse the web at all with my internet speeds.
+
+NoScript also comes in handy. If a website requires JavaScript to function properly (especially those single page applications) I usually leave the site unless it's something I absolutely need to be on. I only enable what's required. Some websites frustratingly use JavaScript for stuff that doesn't need it like basic navigation; the least they can do is have a fallback (aka follow the principle of progressive enhancements). Furthermore, some sites break completely and it's hard to debug.
+
+Because updating the blocklist is a bandwidth intensive task I only do it once a week.
+
+## Configuring my system
+
+Modern systems basically assume you have relatively high speed internet and will eat your bandwidth by default. The problem is especially bad on Windows and fortunately it is not that big of a deal on Linux systems.
+
+I can't recall if I needed to disable any background services and a quick inspection of my /etc git log and shell history shows that I haven't. The only thing I can't do is automated backups because it would take forever to even upload a backup of my home directory.
+
+However, I did set retries=0 (unlimited) in my dnf config so that it doesn't just quit. Flatpak doesn't have retry functionality out of the box, and I need to wrap it with something like:
+
+```
+sh -c "until flatpak update -y; do echo 'Trying again'; sleep 2; done"
+```
+
+I do have dnf-automatic enabled, which doesn't seem to impact my speeds too badly because it only has to update a few packages at a time. I also uninstall packages I don't need as it will make updates less grueling. Finally, I try to run updates or intensive downloads when I go to bed.
+
+## Things I'm missing out on
+
+A non-exhaustive list of things I can no longer do include:
+
+* Streaming. Youtube works just fine, but livestreams, movie/tv show streams don't work for me
+* I stopped using Spotify completely; the client is not resistant to errors due to unreliable internet at all. I just use Youtube for music
+* Download games. I try to minimize big downloads or only download small games
+* Socialization. Not being able to download/play multiplayer games or join on streams (especially if it's Jackbox) means I miss out
+* Viewing large images comfortably; why do people constantly upload 4000x3000 images that are megabytes in size? Please compress them
+
+## Development
+
+Modern developers essentially assume you have high speed internet and trying to contribute to any project that requires an excessive amount of downloads means that I'm doing a lot of waiting and the compile-test cycle becomes more grueling.
+
+When cloning a project, I use --depth=1, although git now offers partial checkout/cloning (it is experimental and a bit janky to use, so I haven't been using it). A lot of setups use Docker which basically assumes bandwidth is unlimited; it doesn't handle unreliable internet very well and the entire build will fail if there's a network error.
+
+Golang dependencies are git repos, which are usually hosted on github. Even for small projects, this is bandwidth intensive because it downloads projects as-is with the entire repository history. If the project has binary files or images or is simply a large project, this impacts speeds as well. I don't need to be downloading README images just so I can build something from source.
+
+## TBD
+
+This is all I can think of for now and may come back to update this page later.

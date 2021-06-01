@@ -1,0 +1,173 @@
+# Web anti-patterns
+
+This is an unstructured rant about anti-patterns I've found on the web that are
+ironically dubbed "best practices". What makes them anti-patterns? Some
+combination of cargo culting, having no actual basis for being superior or in
+general just being crap dressed up as gold.
+
+## The fragile npm ecosystem
+
+npm is a series of programming language based package managers that all suffer
+from a variety of issues.  npm however, consistently hits the news because of
+malicious packages or dependencies causing cascading failures:
+
+=> https://github.com/then/is-promise/issues/13
+
+While this topic has been discussed from death I'm going to focus on a Linux
+based perspective since I've seen little to no discussion on it. Programming
+language based package managers like npm, pip and cargo share one common goal:
+move fast and break things. There is essentially no quality control. Companies
+often use private registries, lock the version of their dependencies or run
+their own infrastructure to prevent all of the issues with npm. I find this
+ironic for reasons I'll discuss shortly. Due to similar issues one Python
+developer has suggested curating pip packages. It's also taken pip over a
+decade to implement a dependency resolver (that doesn't fully solve the
+problem, but that's a different story.)
+
+Comparatively, Linux packages are superior for a few reasons including but not
+limited to:
+
+* Quality control: while all distributions do things differently, the general
+procedure is having a QA team, process and infrastructure in place to
+automatically build, test and allow users to determine if a package is of
+sufficient quality before deploying. This contrasts to the wild west of
+programming language package managers
+* Compatibility: due to the ad-hoc nature of programming language managers,
+there is basically no guarantee of any sort of compatibility. You're on your
+own.  It is impossible for any developer to audit the thousands of dependencies
+that a single dependency might pull in, and as we've seen in practice, it can
+break things. Distro packages at least try to make sure that everything works
+together, up to and including not releasing a new version of the distro until
+there are no major bugs or incompatibilities
+* Security: it is very difficult to have malware enter a Linux repository. In
+Fedora for example, package maintainers must use their real identities and be
+sponsored (else, they use COPR). It wouldn't pass the QA stage as it would be
+caught very quickly and packages are GPG signed to ensure authenticity.
+
+Does this sound familiar? This sounds very similar to what I mentioned above
+that companies to do to get away from the limitations of npm, which seems to
+negate all of the advantages programming language package managers have in the
+first place...
+
+## Security is an after thought
+
+There is a data breach near daily, some disclosed, some not, but the root
+causes boil down to basically two things: management not seeing the value of
+IT/cybersecurity and lack of education from software engineers. It's simply not
+taught in school and developers see it as an inconvenience to be tacked onto
+applications rather than something to be addressed from the beginning.
+
+For a static website, these are pretty standard suggestions:
+
+=> https://security.stackexchange.com/questions/142496/which-security-measures-make-sense-for-a-static-web-site
+
+In practice, I see people who either for some reason are allergic to HTTPS ("do
+I really need it?", "it'll slow down my website") or content security policy
+(having never heard of it or bending over backwards to justify not using it).
+The reality is, a large amount of malware is delivered via JavaScript, often
+times injected into web pages without the webmaster's knowledge.  While a user
+could avoid this problem through judicious use of UBlock Origin and NoScript,
+it's still a webmaster's responsibility to prevent this problem from happening
+in the first place.
+
+A real life example of a web trend that's directly at odds with security is
+"extrating critical CSS":
+
+=> https://web.dev/extract-critical-css/
+
+This uses some sort of external tool to inline CSS directly into the page,
+which is not conducive to a content security policy because inline resources
+are unsafe and it is difficult to whitelist the code without going through
+hoops. It also complicates your build process for a dubious performance
+benefit. One could argue that we wouldn't need all of these tools and
+JavaScript libraries to make the page go faster in the first place if we
+weren't loading megabytes of JavaScript and CSS frameworks.
+
+NOTE: I am glossing over the details, but inline CSS and JavaScript are an
+attack vector for malicious code. Two techniques for preventing this problem
+are creating a server-side nonce or hash to "whitelist" the code. Some
+developers choose to not care at all because their build system of choice makes
+it too difficult, but I argue that's a problem with the build system.
+
+## Accessibility is an after thought
+
+Much like security, accessibility is something developers are either not taught
+or don't really think about. Some popular frameworks like Bootstrap actively defy
+accessibility for some unknown reason:
+
+=> https://getbootstrap.com/docs/5.0/getting-started/accessibility/
+
+	Some combinations of colors that currently make up Bootstrap’s default
+	palette—used throughout the framework for things such as button variations,
+	alert variations, form validation indicators—may lead to insufficient color
+	contrast (below the recommended WCAG 2.1 text color contrast ratio of 4.5:1 and
+	the WCAG 2.1 non-text color contrast ratio of 3:1), particularly when used
+	against a light background. Authors are encouraged to test their specific uses
+	of color and, where necessary, manually modify/extend these default colors to
+	ensure adequate color contrast ratios.
+
+In general, though, there are some trends like hamburger menus that seem to be cargo culted
+simply because frameworks made it popular rather than it actually being good design. See
+these discussions:
+
+=> https://ux.stackexchange.com/questions/80463/what-do-the-3-close-horizontal-bars-not-hamburger-menu-represent-and-what-is-t?r=SearchResults
+=> https://ux.stackexchange.com/questions/45019/has-user-testing-found-that-the-three-horizontal-bars-for-main-menu-on-mobile?r=SearchResults
+
+Other examples in no particular order include:
+
+* Being blinded by pages that have white background and text with poor contrast (like grey text)
+* Sites that hijack your browser functionality, like CTRL+F to use their search
+bar, recreating the scroll wheel to some inferior JavaScript incarnation, or
+context menu
+* Not taking hotkeys or keyboard-based navigation into account
+* Excessive amount of DOM elements which can screw with screenreaders
+
+Which leads me to...
+
+## Design choices that make no sense
+
+In my opinion, a lot of web design boils down to (subjective) choices that
+aren't backed by scientific rigor or cargoculting. Sometimes it's literally
+what the designer thinks looks good on that particular day. Some firms like the nngroup
+provide actual good UX advice that I consider to be required reading.
+
+=> https://www.nngroup.com/
+
+A common violation of standard UX advice I see is not following Fitt's law. To
+summarize from Wikipedia:
+
+	Fitts's law (often cited as Fitt's law) is a predictive model of human movement
+	primarily used in human–computer interaction and ergonomics. This scientific
+	law predicts that the time required to rapidly move to a target area is a
+	function of the ratio between the distance to the target and the width of the
+	target.[1] Fitts's law is used to model the act of pointing, either by
+	physically touching an object with a hand or finger, or virtually, by pointing
+	to an object on a computer monitor using a pointing device. 
+
+=> https://en.wikipedia.org/wiki/Fitts%27s_law
+
+In other words, if I'm constantly having to move my mouse far distances, zig zagging or there's
+no keyboard-based equivalent, a lot of time and patience is going to be wasted.
+
+Another example are completely unnecessary animations and delays. People like
+speedy websites and navigation, but it seems like almost all media I encounter
+(single page applications, games, mobile OS) inject delays, whether needed or
+not. I often find myself enabling "reduced animations" whenever possible
+because I'm highly impatient. To cherry pick a quote from nngroup:
+
+	The basic rules of human perception of time provide a framework for
+	understanding the effects of webpage delays: people can detect delays as short
+	as 1/10th of a second, so anything that takes longer doesn’t feel ‘instant.’
+	Delays of just 1 second are enough to interrupt a person’s conscious thought
+	process, changing the experience into one of waiting for the system to catch
+	up, rather than feeling as though you are directly controlling the interface.
+	This delay reduces conversion.
+
+=> https://www.nngroup.com/articles/the-need-for-speed/
+
+I can understand delays that are added to mask loading times or similar, but if
+it's done purely for aesthetic purposes, I consider that an anti-pattern.
+
+## TODO
+
+Add more.

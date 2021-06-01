@@ -1,0 +1,16 @@
+# remyabel@tilde.team
+
+=> 2019-12-21-evaluating-backup-solutions.gmi
+=> 2019-12-27-rsync-dot-net.gmi
+=> 2019-12-29-solving-misc-automation-problems.gmi
+=> 2019-12-30-more-caveats.gmi
+=> 2020-01-03-keeping-key-files-locked.gmi
+=> 2020-01-04-more-manual-labor.gmi
+=> 2020-01-08-daily-blog.gmi
+=> 2020-01-13-daily-blog.gmi
+=> 2020-01-17-daily-blog.gmi
+=> 2020-01-30-daily-blog.gmi
+=> 2020-02-26-daily-blog.gmi
+=> slow-internet.gmi
+=> toolchain.gmi
+=> web-antipatterns.gmi

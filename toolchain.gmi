@@ -1,0 +1,65 @@
+# Toolchain
+
+The companion source code can be found here:
+
+=> https://github.com/remyabel/cpp-i386-kernel/blob/master/build-toolchain.sh  build-toolchain.sh
+=> https://github.com/remyabel/cpp-i386-kernel/blob/master/elf-toolchain.cmake elf-toolchain.cmake
+
+First, read the OSDev article on cross-compilers:
+
+=> https://wiki.osdev.org/GCC_Cross-Compiler#See_Also osdev gcc cross-compiler
+
+My script differs in one major respect. GCC comes with a convenience script called contrib/download_prerequisites which will download the prerequisites and build and link them in the source tree. You can also install the packages with your distro's package manager if you wish. Compiling the dependencies from source, however, will only cause great pain.
+
+Building GCC and Binutils is rather straight forward, there are just a couple of things specific to cross-compiling. First, you need to set the target architecture (in this example, it's i686-elf). Secondly, we disable -Werror because otherwise Binutils may fail to build. Third, we specify --with-sysroot and --without-headers, the former which will be useful later on for acting as the root directory of the OS and the latter to tell GCC to build without relying on a C library. Finally, disabling NLS and only enabling C and C++ will make the build go faster as we are using less dependencies.
+
+One thing to keep in mind that GCC and Binutils need to be installed to the same prefix, otherwise you will get an error similar to "invalid instruction suffix for". It seems that GCC will fallback to the system assembler even if Binutil binaries are in your path if you do not do this.
+
+I will spend the most time explaining elf-toolchain.cmake since I am using CMake in my project and there is very little information on it in the wiki. When using a cross-compiler, you need to create a "toolchain" file and then point CMake to it with -DCMAKE_TOOLCHAIN_FILE. I'll explain what each section is for.
+
+If we haven't set the CROSS_GCC_PREFIX environment variable, we'll fall back to /usr/local:
+
+```
+if(NOT DEFINED ENV{CROSS_GCC_PREFIX})
+  set(ENV{CROSS_GCC_PREFIX} /usr/local)
+endif()
+```
+
+We need to set the triplet which is the platform we're targetting (in my case, my kernel is i686-elf):
+
+```
+set(TRIPLE "i686-elf")
+set(CMAKE_CXX_COMPILER_TARGET ${TRIPLE})
+set(CMAKE_C_COMPILER_TARGET ${TRIPLE})
+```
+
+Then, we point CMake towards the binaries:
+
+```
+set(CROSS_GCC_BIN $ENV{CROSS_GCC_PREFIX}/bin)
+
+set(CMAKE_C_COMPILER ${CROSS_GCC_BIN}/i686-elf-gcc)
+set(CMAKE_CXX_COMPILER ${CROSS_GCC_BIN}/i686-elf-g++)
+set(CMAKE_AR ${CROSS_GCC_BIN}/i686-elf-ar)
+set(CMAKE_LINKER ${CROSS_GCC_BIN}/i686-elf-g++)
+```
+
+Tell CMake where to look for the binaries (the documentation even notes this variable is most useful when cross-compiling):
+
+```
+set(CMAKE_FIND_ROOT_PATH ${CROSS_GCC_BIN})
+```
+
+Skip the compiler tests, they do not interact well with our cross-compiler:
+
+```
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_CXX_COMPILER_WORKS 1)
+```
+
+And finally, we're using NASM for our assembler (you can use a different one if you choose). We need to explicitly set the object format to elf32 since this is a 32-bit kernel.
+
+```
+set(CMAKE_ASM_NASM_COMPILER /usr/bin/nasm)
+set(CMAKE_ASM_NASM_OBJECT_FORMAT "elf32")
+```
