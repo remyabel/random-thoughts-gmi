@@ -14,3 +14,5 @@
 => slow-internet.gmi
 => toolchain.gmi
 => web-antipatterns.gmi
+
+=> wiki.cgi Find a tilde.wiki page
