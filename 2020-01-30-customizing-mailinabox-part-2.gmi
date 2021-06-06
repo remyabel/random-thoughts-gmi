@@ -1,5 +1,3 @@
-::: {.post tags="privacy mailinabox sysadmin" author="remyabel"} Jan 30, 2020 :::
-
 # Customizing Mail-in-a-box part 2
 
 In attempting to block bots, I've gone through several iterations with configuring Modsecurity, Fail2ban and Nginx.

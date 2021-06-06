@@ -1,5 +1,3 @@
-::: {.post tags="privacy dnscrypt sysadmin dns-over-http" author="remyabel"} Feb 26, 2020 :::
-
 # Firefox and DoH controversy
 
 There's been a lot of controversy lately over Firefox's plan to turn DoH by default. Criticisms range from the centralization of DNS to DoH being inferior to DoT. Personally, I think Mozilla should be getting credit for braving the criticism especially in the face of the rhetoric against encrypted DNS, but that is neither here nor there.
