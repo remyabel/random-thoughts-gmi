@@ -16,3 +16,4 @@
 => 2021-06-04-web-antipatterns.gmi
 
 => wiki.cgi Find a tilde.wiki page
+=> linux-guide-and-hints.cgi Find a linuxguideandhints.com page
