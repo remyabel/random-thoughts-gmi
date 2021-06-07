@@ -1,0 +1,13 @@
+# RE: The bemoaning of people's smartphone usage
+
+=> gemini://republic.circumlunar.space/users/flexibeast/gemlog/2021-06-07.gmi flexibeast: The bemoaning of people's smartphone usage
+
+I pretty much agree with everything said in the post. I think that people do indeed not take the time to consider others feelings/experiences before spouting platitudes or cliché. It's easy to feel superior by reducing someone's complex mental health problem to simple advice like "go outside" or "meet in real life friends". Not only is it condescending, but it demonstrates ignorance of mental health and perpetuates the stigma. I find that outside of mental health spaces (and sometimes even in it), it's all too easy to find this kind of sentiment.
+
+One easy analogy I've found that describes how exhausting mental health is called spoon theory. It's pretty straight forward: a spoon is a metaphor for how much energy one has and throughout the day, activities (no matter how trivial) takes up a spoon. It can be exhausting and difficult for mentally ill people to accomplish tasks that "normal" people find easy like socializing, day-to-day activities and so on.
+
+=> https://en.wikipedia.org/wiki/Spoon_theory
+
+The other aspect is that people tend to frame their remarks and advice through their own world view. An extroverted person is usually not going to understand the point of an introvert. Similarly, somebody who gets a lot of in real life socialization is going to highly favor that over online socialization so they may tell someone who spends a lot of time online that they need in real life friends. As someone who suffers from social anxiety and hasn't had a lot of in real life friends, all of my connections have been online and they feel pretty real.
+
+I don't really expect people not suffering from chronic illness to understand our struggle or to stop being ignorant, but I am glad to see posts like this (in a niche tech space no less). So thank you for writing the post.
