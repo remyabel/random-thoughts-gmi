@@ -14,6 +14,7 @@
 => 2020-11-24-toolchain.gmi 2020-11-24 Toolchain
 => 2020-11-28-slow-internet.gmi 2020-11-28 My life on slow internet
 => 2021-06-04-web-antipatterns.gmi 2021-06-04 Web anti-patterns
+=> 2021-06-07-RE-the-bemoaning-of-peoples-smartphone-usage.gmi 2021-06-07 RE: The bemoaning of people's smartphone usage
 
 => wiki.cgi Find a tilde.wiki page
 => linux-guide-and-hints.cgi linuxguideandhints.com over gemini
