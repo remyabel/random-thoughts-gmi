@@ -1,5 +1,12 @@
 # remyabel@tilde.team
 
+Hi I'm remyabel. I'm interested in many different things including cybersecurity, C++, the small web and anything Linux or the command line. Some of the projects I've worked on include:
+
+=> https://github.com/googleapis/google-cloud-cpp google-cloud-cpp
+=> https://linuxguideandhints.com/ linuxguideandhints.com
+
+GPG: 250E B0E4 06D1 CDF9 3B0B 6BBE 8E34 7123 F020 B734
+
 => 2019-12-21-evaluating-backup-solutions.gmi 2019-12-21 Evaluating backup solutions
 => 2019-12-27-rsync-dot-net.gmi 2019-12-27 Using Rsync.net
 => 2019-12-29-solving-misc-automation-problems.gmi 2019-12-29 Solving miscellaneous automation problems
