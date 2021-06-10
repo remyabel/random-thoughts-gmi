@@ -1,0 +1,82 @@
+# Linux Guide and Hints Dev Blog
+
+I guarantee almost no one will care about this, but a gem blog is a place to put my thoughts after all.
+
+So let's begin with some of the changes I've made that have had a long time coming.
+
+## Moving away from grunt
+
+Grunt[1] is a JavaScript task manager that's been superseded by other project like Gulp.js or Webpack. As is the case for anything, things become obsolete quickly in the JavaScript world. I started using Grunt mainly as a convenient way to run some automated tasks like minifying my files and copying them over to the final build directory. Of course, after refactoring, I realized that what I could replace my entire Grunt file with a couple lines of shell script in my Makefile. This not only reduced complexity in my build steps but eliminated a ton of unnecessary JavaScript dependencies pulled in by Grunt. The other major issue is that many of their contrib tasks are poorly maintained. imagemin for example's last release was in 2018 and has 9 unfixed vulnerabilities.
+
+=> https://gruntjs.com/ 1: Grunt
+=> https://github.com/gruntjs/grunt-contrib-imagemin 2: grunt-contrib-imagemin
+
+Fortunately, the tools that the tasks call under the hood (like Uglify or cssmin) are available in npm and are easy to use. Before:
+
+```
+min: {
+    target: {
+        files: [{
+            expand: true,
+            cwd: 'source/themes/sphinx_theme/static/css',
+            src: ['*.css', '!*.min.css'],
+            dest: 'build/html/_static/css',
+            ext: '.min.css'
+        },
+        {
+            expand: true,
+            cwd: 'node_modules/prismjs/themes',
+            src: ['prism.css', 'prism-okaidia.css'],
+            dest: 'build/html/_static/css',
+            ext: '.min.css'
+        }]
+    }
+}
+```
+
+After:
+
+
+```
+./node_modules/clean-css-cli/bin/cleancss $(min_css_sources) > $(BUILDDIR)/html/_static/css/bundle.min.css
+./node_modules/uglify-js/bin/uglifyjs --compress --mangle -- $(min_js_sources) > $(BUILDDIR)/html/_static/js/bundle.min.js
+```
+
+For testing the site locally, it wasn't that difficult to just use Python3's http.server. There's no live reload feature, but that's not something I particularly cared about anyway.
+
+## Using a dark color scheme
+
+The theme that we use (although heavily modified) is the sphinx_rtd_theme[1]. Most of the changes are personal touches, although I've had to fix the search which currently is broken if you use a content security policy. There also is no dark theme. For this reason, Linux Guide and Hints has gone without a dark theme for a long time even though the white hurts my eyes.
+
+The biggest challenge is finding a good color scheme and then tediously finding what elements to style and making sure it all works together. However, it ended up being not that much work. The gemini browser Lagrange[2] has an interesting approach to color schemes. It seems to dynamically change colors, but using colors that work together. One cannot simply go to the Lagrange source code and get a color scheme because the colors are generated and mixed on the fly and they're not in a copy/pastable format. Instead, I had to take screenshots and use a color picker tool to get the desired result. The next step was simply using the browser inspect element tool and copy and pasting the long selector line. This has the benefit of taking priority over the existing theme since specifity determines priority for styles. All in all, it wasn't that much work.
+
+=> https://tilde.team/~remyabel/dark.png Dark theme screenshot 1360x607 106K
+
+=> https://github.com/readthedocs/sphinx_rtd_theme 1: Sphinx Read the Docs Theme
+=> https://github.com/skyjake/lagrange 2: Lagrange
+
+## Moving away from web fonts
+
+Another strange decision made by sphinx_rtd_theme is the stubbornness with fonts. Many sites on the Internet seem to use font stacks that prioritize Windows and Mac or web fonts (i.e, from Google). Rarely do I see a font stack that targets Linux and even then, it's Ubuntu (and the Ubuntu font isn't exactly great). Furthermore, fonts are pretty hefty and took up half the bandwidth on my site alone. Removing Lato and Roboto Slab removed shaved off about 500K, which doesn't seem much, but it makes a noticeable difference on page load.
+
+To save myself the trouble of coming up with a font stack myself I just used this which I stole from water.css[1] (and who subsequently copy/pasted it from somewhere on the web):
+
+```
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+```
+
+=> https://watercss.kognise.dev/ 1: water.css
+
+Incidentally, this gains us two additional advantages well: privacy and security, as we no longer have to whitelist a CDN.
+
+## Linux Guide and Hints over Gemini
+
+I wanted to see how easy it would be to write a proxy that would take HTTP content, parse it and spit it over Gemini. Thanks to the simplicity of the Gemini protocol it was trivial, especially combined with Python's BeautifulSoup library. I did not bother to make the code maintainable or work for any site but my own. It can be viewed here:
+
+=> https://tildegit.org/remyabel/tilde-wiki-gemini tilde-wiki-gemini
+
+There are still bugs and some pages don't work, but they are slowly being ironed out.
+
+=> https://tilde.team/~remyabel/gemini.png Linux Guide and Hints over gemini screenshot 1360x637 96K
+
+I found this approach to be much simpler and easier than my initial thought, which was to convert my restructured text documents to gemini format. Given the amount of directives and roles (especially those specific to the Sphinx static site generator), there was no easy way to convert without manual intervention. I've tried various combinations of pandoc, using Sphinx to convert the rst documents to markdown and then to gemini and so forth. The only disadvantage of the proxy approach is that it requires an Internet connection and obviously expends bandwidth. However, the pages can be cached or generated locally still, but I will get around to that in the future.

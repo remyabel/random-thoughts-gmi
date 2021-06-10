@@ -22,6 +22,7 @@ GPG: 250E B0E4 06D1 CDF9 3B0B 6BBE 8E34 7123 F020 B734
 => 2020-11-28-slow-internet.gmi 2020-11-28 My life on slow internet
 => 2021-06-04-web-antipatterns.gmi 2021-06-04 Web anti-patterns
 => 2021-06-07-RE-the-bemoaning-of-peoples-smartphone-usage.gmi 2021-06-07 RE: The bemoaning of people's smartphone usage
+=> 2021-06-10-linux-guide-and-hints-dev-blog.gmi 2021-06-10 Linux Guide and Hints Dev Blog
 
 => wiki.cgi Find a tilde.wiki page
 => linux-guide-and-hints.cgi linuxguideandhints.com over gemini
