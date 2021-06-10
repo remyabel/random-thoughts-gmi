@@ -7,22 +7,22 @@ Hi I'm remyabel. I'm interested in many different things including cybersecurity
 
 GPG: 250E B0E4 06D1 CDF9 3B0B 6BBE 8E34 7123 F020 B734
 
-=> 2019-12-21-evaluating-backup-solutions.gmi 2019-12-21 Evaluating backup solutions
-=> 2019-12-27-rsync-dot-net.gmi 2019-12-27 Using Rsync.net
-=> 2019-12-29-solving-misc-automation-problems.gmi 2019-12-29 Solving miscellaneous automation problems
-=> 2019-12-30-more-caveats.gmi 2019-12-30 More caveats and dumb mistakes
-=> 2020-01-03-keeping-key-files-locked.gmi 2020-01-03 Keeping key files locked
-=> 2020-01-04-more-manual-labor.gmi 2020-01-04 More manual labor
-=> 2020-01-08-weird-xfce-bug-and-duplicacy.gmi 2020-01-08 Weird XFCE bug and duplicacy
-=> 2020-01-13-dnscrypt-and-selfhosted-email.gmi 2020-01-13 DNSCrypt and self-hosted e-mail
-=> 2020-01-17-customizing-mailinabox.gmi 2020-01-17 Customizing Mail-in-a-box
-=> 2020-01-30-customizing-mailinabox-part-2.gmi 2020-01-30 Customizing Mail-in-a-box part 2
-=> 2020-02-26-firefox-and-doh-controversy.gmi 2020-02-26 Firefox and DoH controversy
-=> 2020-11-24-toolchain.gmi 2020-11-24 Toolchain
-=> 2020-11-28-slow-internet.gmi 2020-11-28 My life on slow internet
-=> 2021-06-04-web-antipatterns.gmi 2021-06-04 Web anti-patterns
-=> 2021-06-07-RE-the-bemoaning-of-peoples-smartphone-usage.gmi 2021-06-07 RE: The bemoaning of people's smartphone usage
 => 2021-06-10-linux-guide-and-hints-dev-blog.gmi 2021-06-10 Linux Guide and Hints Dev Blog
+=> 2021-06-07-RE-the-bemoaning-of-peoples-smartphone-usage.gmi 2021-06-07 RE: The bemoaning of people's smartphone usage
+=> 2021-06-04-web-antipatterns.gmi 2021-06-04 Web anti-patterns
+=> 2020-11-28-slow-internet.gmi 2020-11-28 My life on slow internet
+=> 2020-11-24-toolchain.gmi 2020-11-24 Toolchain
+=> 2020-02-26-firefox-and-doh-controversy.gmi 2020-02-26 Firefox and DoH controversy
+=> 2020-01-30-customizing-mailinabox-part-2.gmi 2020-01-30 Customizing Mail-in-a-box part 2
+=> 2020-01-17-customizing-mailinabox.gmi 2020-01-17 Customizing Mail-in-a-box
+=> 2020-01-13-dnscrypt-and-selfhosted-email.gmi 2020-01-13 DNSCrypt and self-hosted e-mail
+=> 2020-01-08-weird-xfce-bug-and-duplicacy.gmi 2020-01-08 Weird XFCE bug and duplicacy
+=> 2020-01-04-more-manual-labor.gmi 2020-01-04 More manual labor
+=> 2020-01-03-keeping-key-files-locked.gmi 2020-01-03 Keeping key files locked
+=> 2019-12-30-more-caveats.gmi 2019-12-30 More caveats and dumb mistakes
+=> 2019-12-29-solving-misc-automation-problems.gmi 2019-12-29 Solving miscellaneous automation problems
+=> 2019-12-27-rsync-dot-net.gmi 2019-12-27 Using Rsync.net
+=> 2019-12-21-evaluating-backup-solutions.gmi 2019-12-21 Evaluating backup solutions
 
 => wiki.cgi Find a tilde.wiki page
 => linux-guide-and-hints.cgi linuxguideandhints.com over gemini
