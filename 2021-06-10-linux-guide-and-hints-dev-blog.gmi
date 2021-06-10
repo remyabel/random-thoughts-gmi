@@ -50,7 +50,7 @@ The theme that we use (although heavily modified) is the sphinx_rtd_theme[1]. Mo
 
 The biggest challenge is finding a good color scheme and then tediously finding what elements to style and making sure it all works together. However, it ended up being not that much work. The gemini browser Lagrange[2] has an interesting approach to color schemes. It seems to dynamically change colors, but using colors that work together. One cannot simply go to the Lagrange source code and get a color scheme because the colors are generated and mixed on the fly and they're not in a copy/pastable format. Instead, I had to take screenshots and use a color picker tool to get the desired result. The next step was simply using the browser inspect element tool and copy and pasting the long selector line. This has the benefit of taking priority over the existing theme since specifity determines priority for styles. All in all, it wasn't that much work.
 
-=> https://tilde.team/~remyabel/dark.png Dark theme screenshot 1360x607 106K
+=> gemini://tilde.team/~remyabel/dark.png Dark theme
 
 => https://github.com/readthedocs/sphinx_rtd_theme 1: Sphinx Read the Docs Theme
 => https://github.com/skyjake/lagrange 2: Lagrange
@@ -77,6 +77,6 @@ I wanted to see how easy it would be to write a proxy that would take HTTP conte
 
 There are still bugs and some pages don't work, but they are slowly being ironed out.
 
-=> https://tilde.team/~remyabel/gemini.png Linux Guide and Hints over gemini screenshot 1360x637 96K
+=> gemini://tilde.team/~remyabel/gemini.png Linux Guide and Hints over gemini
 
 I found this approach to be much simpler and easier than my initial thought, which was to convert my restructured text documents to gemini format. Given the amount of directives and roles (especially those specific to the Sphinx static site generator), there was no easy way to convert without manual intervention. I've tried various combinations of pandoc, using Sphinx to convert the rst documents to markdown and then to gemini and so forth. The only disadvantage of the proxy approach is that it requires an Internet connection and obviously expends bandwidth. However, the pages can be cached or generated locally still, but I will get around to that in the future.
