@@ -1,0 +1,31 @@
+# Privacy myths
+
+Privacy is a very contentious topic that solicits a lot of inflammatory opinions. So why not add another one? This post is going to focus on a lot of things I hear that I feel are either misinformed or straight up wrong.
+
+## DNS-over-HTTPS
+
+After Firefox began their DOH rollouts, it received a lot of flak from the media, users and infosec companies. Some of these complaints were valid but in my opinion misguided. Firefox has good intentions but the way they handled it understandably received criticism, but said criticism also needs to be addressed to avoid the spread of misinformation. First, let's start with what Firefox did wrong.
+
+First, they partnered with Cloudflare, a company infamous in the privacy world. Aside from being funded by literal CIA money (In-Q-Tel), their reverse proxy MITM's a large part of the Internet. Cloudflare's default resolver has a pretty lax privacy policy but in an agreement with Firefox, logs less in order to be the default DOH provider in the browser. The experimental ESNI not only is currently broken and not a complete specification, but only works with Cloudflare. Finally, Firefox would override the system DNS settings which understandably made a lot of users unhappy.
+
+Now let's talk about the criticisms of the DOH rollout:
+
+* ISP's were unhappy because, well, it makes it harder for them to snoop on user traffic. World's smallest violin
+* Users were unhappy because of Cloudflare and Firefox not respecting the system settings
+* Infosec companies were unhappy because DOH defeats corporate filtering tools and makes it easier for malware to hide their C&C traffic
+
+Let's address this in reverse. The statements made are not incorrect, but I've heard anywhere from companies outright saying DOH is insecure to not telling the whole story, giving the picture that DOH shouldn't be used.
+
+DOH can infact be combined with filters to combat malware, ads and tracking. Some upstream DOH providers offer this like Quad9 or Cleanbrowsing, but it's also possible to add your own blocklist to DNSCrypt. DNSCrypt has a generate-domains-blocklist script that will pull curated lists from various sources, often maintained by security researchers. Secondly, I don't find that "DOH makes it easier for malware to hide their traffic" to be a convincing argument. Lots of things make it harder for forensics tools to detect malware or easier for malware to do their jobs, this doesn't mean that we should not use privacy enhancing tools. That would be like saying encryption makes it easier for malware to evade anti-virus detection, so encryption is bad.
+
+Firefox not respecting system settings is also a valid complaint, but largely fixed now. One can change the DOH provider and adjust the network.trr settings to change Firefox's behavior. Personally, I use DNSCrypt which comes with its own DOH server (although you can directly use a DOH provider if you want). While Cloudflare is the default, it is not required and any complaints of this nature are obsolete now.
+
+## VPNs
+
+This is a rather tricky subject. On the one hand, it is perfectly valid to say VPNs are useless because you are shifting the data from your ISP to the VPN provider. There aer a lot of scammy VPNs out there that harvest and sell your data. While more reputable VPNs exist, there is nothing preventing them from enabling logging at a future date or being compelled by law enforcement to do so.
+
+With that being said, does this mean that VPNs are worthless? Not at all. They still have valid use cases, such as getting around region blocks, corporate VPNs or tunnelling remotely into your router.
+
+From a privacy standpoint, VPNs like Tor are insufficient for protecting your privacy. You also need to change your browsing habits. If you are logging into your Facebook or browsing the web normally as you would, it doesn't matter what IP you use. For a lot of people IPs are ephemeral and can change for a variety reasons from DHCP to CG-NAT. Trackers use more sophisticated techniques than just IP-based tracking for this exact reason and traffic correlation can deanonymize you even if your IP is masked. Therefore, I still think VPNs are useful, with a caveat.
+
+Of course, if you don't trust a third party VPN provider, you can set up Wireguard or similar. You still have to trust the hardware it's running on, but at least you are more in control of your data.
