@@ -7,6 +7,7 @@ Hi I'm remyabel. I'm interested in many different things including cybersecurity
 
 GPG: 250E B0E4 06D1 CDF9 3B0B 6BBE 8E34 7123 F020 B734
 
+=> 2021-06-17-instant-gratification.gmi 2021-06-17 Instant Gratification
 => 2021-06-10-privacy-myths.gmi 2021-06-10 Privacy Myths
 => 2021-06-10-linux-guide-and-hints-dev-blog.gmi 2021-06-10 Linux Guide and Hints Dev Blog
 => 2021-06-07-RE-the-bemoaning-of-peoples-smartphone-usage.gmi 2021-06-07 RE: The bemoaning of people's smartphone usage
