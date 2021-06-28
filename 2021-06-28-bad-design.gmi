@@ -1,0 +1,19 @@
+# Bad design
+
+Yet another rant on web trends. I originally was writing a post and scrapped it but then came across an article that basically said everything I wanted to say anyway:
+
+=> https://shkspr.mobi/blog/2021/06/whatever-happened-to-ui-affordances/ Whatever Happened to UI Affordances?
+
+When you look at the fact that modern "UI design" seems to be more concerned with aesthetics than actual UI it makes sense. It's no different than fashion or architecture where the designer is more concerned with how it looks rather than how it functions. I wonder what the root of the problem is, but I suspect it may have something to do with not enough students taking Human Computer Interfaces or the job role being conflated so that graphics designers are being hired for user experience roles. Or maybe competent user experience people do exist and it's management and other factors at play that override smart technical decisions in favor of dark patterns and baffling decisions.
+
+But then you look at web trends on the Internet and reality hits. How much dumb stuff do we see on the Internet that's popular yet makes no sense? Examples include:
+
+* Gray text on a white background
+* Stock or banner images in text-heavy pages that add no purpose other than to take up space and bandwidth
+* Overusage of hamburger menus
+* Excessive usage of animations
+* Too much usage of JavaScript just to render text on a page
+
+I suspect the other aspect of it is very simple: cargo culting. These popular frameworks set these de facto standards, even if they have no logical basis behind them, and people copy it or use the framework without thinking. I wish people would take a trip to nngroup or pick up an HCI book and see how much nonsense we have to tolerate on the Internet because trendy designers decided so.
+
+=> https://www.nngroup.com/
