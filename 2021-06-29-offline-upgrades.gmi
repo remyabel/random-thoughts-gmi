@@ -1,32 +1,12 @@
 # Offline upgrades
 
-Offline upgrades are not very popular and it's easy to see why. You have to
-choose a time to download the packages, shut down your computer to install it,
-then reboot. All of this adds cognitive load to the user, it's never a
-convenient time to reboot the computer and it takes additional time to boot
-back into the system and get back into the flow. It's even worse on Windows
-where upgrades are compulsory and they're notorious for breaking, corrupting or
-taking forever to complete.
+Offline upgrades are not very popular and it's easy to see why. You have to choose a time to download the packages, shut down your computer to install it, then reboot. All of this adds cognitive load to the user, it's never a convenient time to reboot the computer and it takes additional time to boot back into the system and get back into the flow. It's even worse on Windows where upgrades are compulsory and they're notorious for breaking, corrupting or taking forever to complete.
 
-Updates on Linux are not as painful. Compared to Windows where the kernel,
-desktop environment and registry are tightly coupled together and third party
-drivers run in kernel space, software components are loosely coupled from the
-kernel and drivers are packaged within Linux's monolithic kernel.  This allows
-you to quickly and easily update your system while it is running and you
-generally do not need to reboot your system as often as on Windows. Updates are
-anecdotally just more reliable and less time consuming as well.
+Updates on Linux are not as painful. Compared to Windows where the kernel, desktop environment and registry are tightly coupled together and third party drivers run in kernel space, software components are loosely coupled from the kernel and drivers are packaged within Linux's monolithic kernel. This allows you to quickly and easily update your system while it is running and you generally do not need to reboot your system as often as on Windows. Updates are anecdotally just more reliable and less time consuming as well.
 
-With that being said, it's actually not recommended to update your system while
-running inside a desktop environment. Why? Two reasons: one, if the package
-manager fails for any reason it can leave the updates in an indeterminate state
-and be messy to fix.  Two, software can start to glitch out, crash or corrupt
-your data if the underlying libraries are updated while it is running.
+With that being said, it's actually not recommended to update your system while running inside a desktop environment. Why? Two reasons: one, if the package manager fails for any reason it can leave the updates in an indeterminate state and be messy to fix.  Two, software can start to glitch out, crash or corrupt your data if the underlying libraries are updated while it is running.
 
-To handle the first issue, it is recommended you run dnf (on Fedora) inside a
-tty. Reportedly, apt (on Ubuntu) does no thave this issue.  dnf also has a
-plugin called tracer that allows you to see what applications need restarting
-and a lot of times you can just restart the applications without rebooting the
-entire system.
+To handle the first issue, it is recommended you run dnf (on Fedora) inside a tty. Reportedly, apt (on Ubuntu) does no thave this issue.  dnf also has a plugin called tracer that allows you to see what applications need restarting and a lot of times you can just restart the applications without rebooting the entire system.
 
 There is a safer and slower approach using dnf offline-upgrade. Like so:
 
@@ -35,8 +15,4 @@ dnf offline-upgrade download
 dnf offline-upgrade reboot
 ```
 
-This allows you to download the packages at any time and when you want to
-reboot your computer, it will install the packages. It is easy to see why this
-approach is unpopular, even though it is the safest, because it is time
-consuming. However, it is not as time consuming as Windows, especially if you
-only have a few packages to upgrade.
+This allows you to download the packages at any time and when you want to reboot your computer, it will install the packages. It is easy to see why this approach is unpopular, even though it is the safest, because it is time consuming. However, it is not as time consuming as Windows, especially if you only have a few packages to upgrade.
