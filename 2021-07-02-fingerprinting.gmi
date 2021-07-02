@@ -1,0 +1,14 @@
+# Fingerprinting
+
+To people who say using ad blockers or script blockers makes you more fingerprintable... my response is, who cares?
+
+This is a strawman/got'cha I see pop up frequently on the Internet that is almost as obnoxious as "you're afraid of being tracked? do you own a smartphone?" Not only is it self-congratulatory as if this person is making an insight that's never been made before, but it's also black and white thinking.  It depends on your threat model, what you're trying to accomplish and what you can actually realistically do.
+
+First let's talk about what ad or script blockers (like UBlock Origin or NoScript) accomplish:
+
+* they, well, block ads
+* they block tracking scripts
+* they mitigate malware (which can be indirectly from ads) or by having filters that specifically target malware domains, or simply preventing JavaScript malware from loading altogether
+* they make sites load faster, great for impatient people or those low on bandwidth
+
+So when I hear "well that makes you more fingerprintable" consider that not only is it a tiny amount of entropy in your entire footprint, but that such a large amount of datapoints are being collected about you that are difficult if not outright impossible to control sometimes, that I feel like it's a moot point. Not to mention that allowing the myriad of tracking scripts and pixels to be loaded which do definitively track you so that you can mitigate a SINGLE datapoint seems kind of pointless. Reducing your fingerprintability would be great, but it is not the only factor you should consider and it is shameful that this type of black and white thinking is being promoted by advocates.
